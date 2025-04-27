@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"context"
 	"database/sql"
 	"testing"
 	"time"
@@ -42,7 +43,9 @@ func (s *consumerRepositoryTestSuite) TestFindByPhoneNumber() {
 		WithArgs(phone).
 		WillReturnRows(rows)
 
-	consumer, err := s.Repo.FindByPhoneNumber(phone)
+	ctx := context.Background()
+
+	consumer, err := s.Repo.FindByPhoneNumber(ctx, phone)
 
 	s.Require().NoError(err)
 	s.Require().NotNil(consumer)
@@ -65,7 +68,9 @@ func (s *consumerRepositoryTestSuite) TestFindByNIK() {
 		WithArgs(nik).
 		WillReturnRows(rows)
 
-	consumer, err := s.Repo.FindByNIK(nik)
+	ctx := context.Background()
+
+	consumer, err := s.Repo.FindByNIK(ctx, nik)
 
 	s.Require().NoError(err)
 	s.Require().NotNil(consumer)
