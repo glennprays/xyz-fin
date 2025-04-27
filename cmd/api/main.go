@@ -17,6 +17,7 @@ import (
 	"github.com/glennprays/xyz-fin/internal/app/middleware"
 	"github.com/glennprays/xyz-fin/internal/app/repository"
 	"github.com/glennprays/xyz-fin/internal/app/router"
+	"github.com/glennprays/xyz-fin/internal/app/service"
 	"github.com/glennprays/xyz-fin/internal/app/usecase"
 	"github.com/glennprays/xyz-fin/pkg/auth"
 	"github.com/glennprays/xyz-fin/pkg/hasher"
@@ -68,22 +69,34 @@ func main() {
 
 	log.Println("Initializing repositories...")
 	consumerRepo := repository.NewConsumerRepository(db)
+	consumerLimitRepo := repository.NewConsumerLimitRepository(db)
+	transactionRepo := repository.NewTransactionRepository(db)
 
 	log.Println("initializing services...")
+	transactionService := service.NewTransactionService()
 
 	log.Println("initializing usecases...")
 	consumerUsecase := usecase.NewConsumerUsecase(consumerRepo, jwtManager, *argonHasher)
+	transactionUsecase := usecase.NewTransactionUsecase(
+		db,
+		transactionService,
+		transactionRepo,
+		consumerRepo,
+		consumerLimitRepo,
+	)
 
 	log.Println("initializing middleware...")
 	authMiddleware := middleware.NewAuthMiddleware(jwtManager)
 
 	log.Println("initializing handlers...")
 	consumerHandler := handler.NewConsumerHandler(consumerUsecase)
+	transactionHandler := handler.NewTransactionHandler(transactionUsecase)
 
 	log.Println("setting up router...")
 	routerEngine := router.SetupRouter(
 		authMiddleware,
 		consumerHandler,
+		transactionHandler,
 	)
 
 	log.Println("setting up HTTP server...")

@@ -11,8 +11,7 @@ import (
 )
 
 const (
-	ContextUserIDKey        = "userID"
-	ContextUserRoleKey      = "userRole"
+	ContextUserPhoneNumber  = "phoneNumber"
 	AuthorizationHeaderKey  = "Authorization"
 	AuthorizationTypeBearer = "Bearer"
 )
@@ -58,7 +57,7 @@ func (m *AuthMiddleware) Authenticate() gin.HandlerFunc {
 			return
 		}
 
-		c.Set(ContextUserIDKey, claims.PhoneNumber)
+		c.Set(ContextUserPhoneNumber, claims.PhoneNumber)
 
 		c.Next()
 	}

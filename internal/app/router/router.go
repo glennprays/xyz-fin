@@ -15,18 +15,23 @@ const BasePath = "/api/v1"
 func SetupRouter(
 	authMiddleware *middleware.AuthMiddleware,
 	consumerHandler *handler.ConsumerHandler,
+	transactionHandler *handler.TransactionHandler,
 ) *gin.Engine {
 	router := gin.Default()
 	router.Use(cors.Default())
 
-	router.GET("/health", func(c *gin.Context) {
+	apiV1 := router.Group(BasePath)
+
+	apiV1.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "ok", "timestamp": time.Now()})
 	})
 
-	consumerGroup := router.Group(BasePath + "/consumers")
+	consumerGroup := apiV1.Group("/consumers")
 	{
 		consumerGroup.POST("/login", consumerHandler.Login)
 	}
+
+	apiV1.POST("/transactions", authMiddleware.Authenticate(), transactionHandler.CreateTransaction)
 
 	return router
 }

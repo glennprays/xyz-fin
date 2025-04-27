@@ -75,3 +75,9 @@ Password: `Password@123`
 - Account 2 (Annisa)
 Phone Number: `087654321098`
 Password: `Password@123`
+
+### Run Unit Test 
+To run the unit tests, use the following command:
+```bash
+go test ./...
+```

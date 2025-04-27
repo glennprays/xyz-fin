@@ -9,6 +9,7 @@ import (
 
 type TransactionRepository interface {
 	Save(ctx context.Context, tx *sql.Tx, transaction *model.Transaction) error
+	GetActiveTransactionSumByNIK(ctx context.Context, tx *sql.Tx, nik string) (float64, error)
 }
 
 type transactionRepository struct {
@@ -36,4 +37,19 @@ func (r *transactionRepository) Save(ctx context.Context, tx *sql.Tx, transactio
 		transaction.Status,
 	)
 	return err
+}
+
+func (r *transactionRepository) GetActiveTransactionSumByNIK(ctx context.Context, tx *sql.Tx, nik string) (float64, error) {
+	query := `
+    SELECT SUM(otr) FROM transactions
+    WHERE consumer_nik = $1 AND status = 'ACTIVE'
+  `
+
+	var sum float64
+	err := tx.QueryRowContext(ctx, query, nik).Scan(&sum)
+	if err != nil {
+		return 0, err
+	}
+
+	return sum, nil
 }

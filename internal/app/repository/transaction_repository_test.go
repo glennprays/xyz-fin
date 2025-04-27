@@ -113,6 +113,51 @@ func (s *transactionRepositoryTestSuite) TestSave_Error() {
 	s.Require().NoError(err)
 }
 
+func (s *transactionRepositoryTestSuite) TestGetActiveTransactionSumByNIK_Success() {
+	ctx := context.Background()
+	s.Mock.ExpectBegin()
+	tx, err := s.DB.Begin()
+	s.Require().NoError(err)
+
+	nik := "1234567890"
+	query := `SELECT SUM\(otr\) FROM transactions WHERE consumer_nik = \$1 AND status = 'ACTIVE'`
+
+	s.Mock.ExpectQuery(query).
+		WithArgs(nik).
+		WillReturnRows(sqlmock.NewRows([]string{"sum"}).AddRow(100000000))
+
+	sum, err := s.Repo.GetActiveTransactionSumByNIK(ctx, tx, nik)
+	s.Require().NoError(err)
+	s.Equal(100000000.0, sum)
+
+	s.Mock.ExpectCommit()
+	err = tx.Commit()
+	s.Require().NoError(err)
+}
+
+func (s *transactionRepositoryTestSuite) TestGetActiveTransactionSumByNIK_Error() {
+	ctx := context.Background()
+	s.Mock.ExpectBegin()
+	tx, err := s.DB.Begin()
+	s.Require().NoError(err)
+
+	nik := "1234567890"
+	query := `SELECT SUM\(otr\) FROM transactions WHERE consumer_nik = \$1 AND status = 'ACTIVE'`
+
+	s.Mock.ExpectQuery(query).
+		WithArgs(nik).
+		WillReturnError(sql.ErrConnDone)
+
+	sum, err := s.Repo.GetActiveTransactionSumByNIK(ctx, tx, nik)
+	s.Require().Error(err)
+	s.Equal(sql.ErrConnDone, err)
+	s.Equal(0.0, sum)
+
+	s.Mock.ExpectRollback()
+	err = tx.Rollback()
+	s.Require().NoError(err)
+}
+
 func TestTransactionRepositoryTestSuite(t *testing.T) {
 	suite.Run(t, new(transactionRepositoryTestSuite))
 }
