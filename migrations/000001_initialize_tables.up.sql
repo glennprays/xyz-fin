@@ -1,7 +1,7 @@
 CREATE TABLE consumers (
     nik VARCHAR(16) PRIMARY KEY,
     phone_number VARCHAR(20) UNIQUE NOT NULL,
-    password_hash VARCHAR(100) NOT NULL, 
+    password_hash TEXT NOT NULL, 
     full_name VARCHAR(255) NOT NULL,
     legal_name VARCHAR(255),
     tempat_lahir VARCHAR(100) NOT NULL, 

@@ -12,7 +12,7 @@ INSERT INTO consumers (
 ) VALUES (
     '1111',
     '081234567890',     
-    '$argon2id$v=19$m=65536,t=3,p=4$kaBzbhD4XfS6k2r3fVO/sw$04C1R/zvQfohcObSWK70KEnVy+2',
+    '$argon2id$v=19$m=65536,t=3,p=4$BEMOnl7KwywiS5LHLqtmJg$Cm5gGNJjzFo0navnegsRAJIFvPd/nI577+STF/t2z8E',
     'Budi',            
     'Budi Santoso',   
     'Jakarta',       
@@ -36,7 +36,7 @@ INSERT INTO consumers (
 ) VALUES (
     '2222', 
     '087654321098',     
-    '$argon2id$v=19$m=65536,t=3,p=4$kaBzbhD4XfS6k2r3fVO/sw$04C1R/zvQfohcObSWK70KEnVy+2',
+    '$argon2id$v=19$m=65536,t=3,p=4$BEMOnl7KwywiS5LHLqtmJg$Cm5gGNJjzFo0navnegsRAJIFvPd/nI577+STF/t2z8E',
     'Annisa',           
     'Annisa Putri',    
     'Bandung',        
