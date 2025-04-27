@@ -11,7 +11,7 @@ import (
 )
 
 type TransactionUsecase interface {
-	CreateTransaction(ctx context.Context, nik string, req *model.TransactionRequest) (*model.TransactionResponse, error)
+	CreateTransaction(ctx context.Context, phoneNumber string, req *model.TransactionRequest) (*model.TransactionResponse, error)
 }
 
 type transactionUsecase struct {
@@ -38,12 +38,7 @@ func NewTransactionUsecase(
 	}
 }
 
-func (u *transactionUsecase) CreateTransaction(ctx context.Context, nik string, req *model.TransactionRequest) (*model.TransactionResponse, error) {
-	if nik != req.ConsumerNIK {
-		appErr := errors.New("nik does not match with consumer NIK")
-		return nil, model.NewError(model.ErrBadRequest, appErr)
-	}
-
+func (u *transactionUsecase) CreateTransaction(ctx context.Context, phoneNumber string, req *model.TransactionRequest) (*model.TransactionResponse, error) {
 	tx, err := u.db.BeginTx(ctx, nil)
 	if err != nil {
 		appErr := errors.New("failed to begin transaction")
@@ -67,7 +62,12 @@ func (u *transactionUsecase) CreateTransaction(ctx context.Context, nik string, 
 		return nil, model.NewError(model.ErrNotFound, appErr)
 	}
 
-	consumerLimits, err := u.consumerLimitRepo.FindByNIKAndTenor(ctx, tx, nik, req.Tenor)
+	if req.ConsumerNIK != consumer.NIK {
+		appErr := errors.New("consumer NIK does not match")
+		return nil, model.NewError(model.ErrBadRequest, appErr)
+	}
+
+	consumerLimits, err := u.consumerLimitRepo.FindByNIKAndTenor(ctx, tx, req.ConsumerNIK, req.Tenor)
 	if err != nil {
 		appErr := errors.New("failed to find consumer limits")
 		return nil, model.NewError(model.ErrInternalFailure, appErr)
@@ -77,7 +77,7 @@ func (u *transactionUsecase) CreateTransaction(ctx context.Context, nik string, 
 		return nil, model.NewError(model.ErrNotFound, appErr)
 	}
 
-	activeSUM, err := u.transactionRepo.GetActiveTransactionSumByNIK(ctx, tx, nik)
+	activeSUM, err := u.transactionRepo.GetActiveTransactionSumByNIK(ctx, tx, consumer.NIK)
 	if err != nil {
 		appErr := errors.New("failed to get active transaction sum")
 		return nil, model.NewError(model.ErrInternalFailure, appErr)
@@ -89,7 +89,6 @@ func (u *transactionUsecase) CreateTransaction(ctx context.Context, nik string, 
 	}
 
 	transactionID := u.transactionService.GenerateTransactionID()
-	// admin fee 3% and bungan 5%
 	adminFee := req.OTR * 0.03
 	jumlahBunga := req.OTR * 0.05
 	transaction := &model.Transaction{

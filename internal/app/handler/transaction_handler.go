@@ -31,14 +31,14 @@ func (h *TransactionHandler) CreateTransaction(c *gin.Context) {
 		return
 	}
 
-	nik, err := util.GetUserPhoneNumberFromContext(c)
+	phoneNumber, err := util.GetUserPhoneNumberFromContext(c)
 	if err != nil {
 		apiErr := httperror.FromError(err)
 		c.JSON(apiErr.Status, model.ErrorResponse{Message: apiErr.Message, Details: err.Error()})
 		return
 	}
 
-	transaction, err := h.transactionUsecase.CreateTransaction(c.Request.Context(), nik, &req)
+	transaction, err := h.transactionUsecase.CreateTransaction(c.Request.Context(), phoneNumber, &req)
 	if err != nil {
 		apiErr := httperror.FromError(err)
 		var details interface{}
