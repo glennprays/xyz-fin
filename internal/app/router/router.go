@@ -16,6 +16,7 @@ func SetupRouter(
 	authMiddleware *middleware.AuthMiddleware,
 	consumerHandler *handler.ConsumerHandler,
 	transactionHandler *handler.TransactionHandler,
+	consumerLimitHandler *handler.ConsumerLimitHandler,
 ) *gin.Engine {
 	router := gin.Default()
 	router.Use(cors.Default())
@@ -30,6 +31,8 @@ func SetupRouter(
 	{
 		consumerGroup.POST("/login", consumerHandler.Login)
 		consumerGroup.GET("/:nik", authMiddleware.Authenticate(), consumerHandler.GetByNIK)
+		consumerGroup.GET("/:nik/limits", authMiddleware.Authenticate(), consumerLimitHandler.GetLimitsByNIK)
+
 	}
 
 	apiV1.POST("/transactions", authMiddleware.Authenticate(), transactionHandler.CreateTransaction)

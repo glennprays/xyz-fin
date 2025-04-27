@@ -84,6 +84,7 @@ func main() {
 		consumerRepo,
 		consumerLimitRepo,
 	)
+	consumerLimitUsecase := usecase.NewConsumerLimitUsecase(consumerRepo, consumerLimitRepo)
 
 	log.Println("initializing middleware...")
 	authMiddleware := middleware.NewAuthMiddleware(jwtManager)
@@ -91,12 +92,14 @@ func main() {
 	log.Println("initializing handlers...")
 	consumerHandler := handler.NewConsumerHandler(consumerUsecase)
 	transactionHandler := handler.NewTransactionHandler(transactionUsecase)
+	consumerLimitHandler := handler.NewConsumerLimitHandler(consumerLimitUsecase)
 
 	log.Println("setting up router...")
 	routerEngine := router.SetupRouter(
 		authMiddleware,
 		consumerHandler,
 		transactionHandler,
+		consumerLimitHandler,
 	)
 
 	log.Println("setting up HTTP server...")

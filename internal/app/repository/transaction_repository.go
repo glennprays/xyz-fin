@@ -41,7 +41,7 @@ func (r *transactionRepository) Save(ctx context.Context, tx *sql.Tx, transactio
 
 func (r *transactionRepository) GetActiveTransactionSumByNIK(ctx context.Context, tx *sql.Tx, nik string) (float64, error) {
 	query := `
-    SELECT SUM(otr) FROM transactions
+    SELECT COALESCE(SUM(otr), 0) FROM transactions
     WHERE consumer_nik = $1 AND status = 'ACTIVE'
   `
 

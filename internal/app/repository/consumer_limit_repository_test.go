@@ -43,7 +43,7 @@ func (s *consumerLimitRepositoryTestSuite) TestFindByNIK() {
 		"12345", 24, 2000000.00, dummyTime, dummyTime,
 	)
 
-	s.Mock.ExpectQuery(`SELECT consumer_nik, tenor, limit_amount, created_at, updated_at FROM consumer_limits WHERE nik = \$1 ORDER BY tenor ASC`).
+	s.Mock.ExpectQuery(`SELECT consumer_nik, tenor, limit_amount, created_at, updated_at FROM consumer_limits WHERE consumer_nik = \$1 ORDER BY tenor ASC`).
 		WithArgs(nik).
 		WillReturnRows(rows)
 

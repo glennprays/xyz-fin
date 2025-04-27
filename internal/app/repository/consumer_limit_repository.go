@@ -8,7 +8,7 @@ import (
 )
 
 type ConsumerLimitRepository interface {
-	FindByNIK(ctx context.Context, nik string) ([]*model.ConsumerLimit, error)
+	FindByNIK(ctx context.Context, nik string) ([]model.ConsumerLimit, error)
 	FindByNIKAndTenor(ctx context.Context, tx *sql.Tx, nik string, tenor int) (*model.ConsumerLimit, error)
 }
 
@@ -20,10 +20,10 @@ func NewConsumerLimitRepository(db *sql.DB) ConsumerLimitRepository {
 	return &consumerLimitRepository{db: db}
 }
 
-func (r *consumerLimitRepository) FindByNIK(ctx context.Context, nik string) ([]*model.ConsumerLimit, error) {
-	var consumerLimits []*model.ConsumerLimit
+func (r *consumerLimitRepository) FindByNIK(ctx context.Context, nik string) ([]model.ConsumerLimit, error) {
+	var consumerLimits []model.ConsumerLimit
 	query := `SELECT consumer_nik, tenor, limit_amount, created_at, updated_at
-			  FROM consumer_limits WHERE nik = $1 ORDER BY tenor ASC`
+			  FROM consumer_limits WHERE consumer_nik = $1 ORDER BY tenor ASC`
 
 	rows, err := r.db.QueryContext(ctx, query, nik)
 	if err != nil {
@@ -32,7 +32,7 @@ func (r *consumerLimitRepository) FindByNIK(ctx context.Context, nik string) ([]
 	defer rows.Close()
 
 	for rows.Next() {
-		consumerLimit := &model.ConsumerLimit{}
+		consumerLimit := model.ConsumerLimit{}
 		if err := rows.Scan(&consumerLimit.ConsumerNIK, &consumerLimit.Tenor, &consumerLimit.LimitAmount, &consumerLimit.CreatedAt, &consumerLimit.UpdatedAt); err != nil {
 			return nil, err
 		}

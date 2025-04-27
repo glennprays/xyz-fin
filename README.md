@@ -72,9 +72,11 @@ $ docker compose up -d
 - Account 1 (Budi)
 Phone Number: `081234567890`
 Password: `Password@123`
+NIK: `1111`
 - Account 2 (Annisa)
 Phone Number: `087654321098`
 Password: `Password@123`
+NIK: `2222`
 
 ### Run Unit Test 
 To run the unit tests, use the following command:
