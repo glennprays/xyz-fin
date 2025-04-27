@@ -1,7 +1,306 @@
 openapi: 3.1.0
 info:
-  title: Example Golang Clean Architecture API 
+  title: PT XYZ Multifinace API
   version: 1.0.0
-  description: API  for a Golang Clean Architecture example
+  description: API documentation for PT XYZ Multifinance
 servers:
   - url: /api/v1
+
+components:
+  schemas:
+    LoginRequest:
+      type: object
+      properties:
+        phone_number:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - password
+
+    AuthResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        refresh_token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+    ConsumerResponse:
+      type: object 
+      properties:
+        nik:
+          type: string
+          example: 1234567890123456 
+        phone_number:
+          type: string
+          example: 08123456789 
+        full_name:
+          type: string
+          example: John Doe 
+        legal_name:
+          type: string
+          example: John Doe 
+        tempat_lahir:
+          type: string
+          example: Jakarta 
+        tanggal_lahir:
+          type: string
+          format: date-time
+        gaji:
+          type: number
+          format: double
+          example: 5000000.00
+        created_at:
+          type: string
+          format: date-time
+
+    ConsumerLimitResponse:
+      type: object
+      properties:
+        limit_amount:
+          type: number
+          format: double
+          example: 10000000.00
+        tenor:
+          type: integer
+          example: 6
+
+    TransactionRequest:
+      type: object
+      properties:
+        consumer_nik:
+          type: string
+          example: 1234567890123456
+        otr:
+          type: number
+          format: double
+          example: 1000000.00
+        tenor:
+          type: integer
+          example: 6
+        nama_aset:
+          type: string
+          example: Mobil
+
+    TransactionResponse:
+      type: object
+      properties:
+        nomor_kontrak:
+          type: string
+          example: 1234567890abcdef
+        consumer_nik:
+          type: string
+          example: 1234567890123456
+        otr:
+          type: number
+          format: double
+          example: 1000000.00
+        admin_fee:
+          type: number
+          format: double
+          example: 50000.00
+        jumlah_cicilan:
+          type: number
+          format: double
+          example: 200000.00
+        jumlah_bunga:
+          type: number
+          format: double
+          example: 100000.00
+        name_aset:
+          type: string
+          example: Mobil
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - INACTIVE
+            - PENDING
+          example: ACTIVE
+        
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Validation failed for request."
+        details: 
+          type: object
+          additionalProperties: true
+
+  securitySchemes:
+    refreshBearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    consumerBearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses: 
+    BadRequest:
+      description: Invalid request syntax or parameters.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: Authentication credentials missing or invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Forbidden:
+      description: Authenticated user does not have permission to perform the action.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: The requested resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Conflict:
+       description: Conflict with the current state of the resource (e.g., email already exists).
+       content:
+         application/json:
+           schema:
+             $ref: '#/components/schemas/ErrorResponse'
+    InternalServerError:
+      description: An unexpected error occurred on the server.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+paths:
+  /consumers/login:
+    post:
+      summary: Login consumer
+      operationId: loginConsumer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /consumers/{nik}:
+    get:
+      summary: Get consumer data
+      operationId: getConsumerData
+      security:
+        - consumerBearerAuth: []
+      parameters:
+        - name: nik
+          in: path
+          required: true
+          description: NIK of the consumer
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful retrieval of consumer data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsumerResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /consumers/{nik}/limits:
+    get:
+      summary: Get consumer limit
+      operationId: getConsumerLimit
+      security:
+        - consumerBearerAuth: []
+      parameters:
+        - name: nik
+          in: path
+          required: true
+          description: NIK of the consumer
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful retrieval of consumer limit
+          content:
+            application/json:
+              schema:
+                type: array 
+                items:
+                  $ref: '#/components/schemas/ConsumerLimitResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /transactions:
+    post:
+      summary: Create transaction
+      operationId: createTransaction
+      security:
+        - consumerBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionRequest'
+      responses:
+        '201':
+          description: Transaction created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
