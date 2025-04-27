@@ -62,7 +62,7 @@ go run cmd/api/main.go
 
 ### Run the program in build container 
 ```bash
-$ cd deployment/production 
+$ cd misc/production 
 $ docker compose build 
 $ docker compose up -d
 ```
