@@ -13,6 +13,7 @@ import (
 
 type ConsumerUsecase interface {
 	Login(ctx context.Context, phoneNumber string, password string) (*model.AuthResponse, error)
+	GetByNIK(ctx context.Context, phoneNumber string, nik string) (*model.Consumer, error)
 }
 
 type consumerUsecase struct {
@@ -51,4 +52,23 @@ func (u *consumerUsecase) Login(ctx context.Context, phoneNumber string, passwor
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 	}, nil
+}
+
+func (u *consumerUsecase) GetByNIK(ctx context.Context, phoneNumber string, nik string) (*model.Consumer, error) {
+	consumer, err := u.repo.FindByNIK(ctx, nik)
+	if err != nil {
+		appErr := errors.New("failed to find consumer")
+		return nil, model.NewError(model.ErrInternalFailure, appErr)
+	}
+	if consumer == nil {
+		appErr := errors.New("consumer not found")
+		return nil, model.NewError(model.ErrNotFound, appErr)
+	}
+
+	if consumer.PhoneNumber != phoneNumber {
+		appErr := errors.New("unauthorized access")
+		return nil, model.NewError(model.ErrUnauthorized, appErr)
+	}
+
+	return consumer, nil
 }

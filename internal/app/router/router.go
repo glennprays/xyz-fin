@@ -29,6 +29,7 @@ func SetupRouter(
 	consumerGroup := apiV1.Group("/consumers")
 	{
 		consumerGroup.POST("/login", consumerHandler.Login)
+		consumerGroup.GET("/:nik", authMiddleware.Authenticate(), consumerHandler.GetByNIK)
 	}
 
 	apiV1.POST("/transactions", authMiddleware.Authenticate(), transactionHandler.CreateTransaction)
