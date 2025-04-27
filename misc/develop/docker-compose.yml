@@ -1,6 +1,6 @@
 services:
   postgres:
-    container_name: gca-postgres
+    container_name: xf-postgres
     image: postgres:16.3
     ports:
       - 5432:5432
@@ -10,10 +10,10 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       TZ: UTC
     volumes:
-      - gca-postgres-data:/var/lib/postgresql/data
+      - xf-postgres-data:/var/lib/postgresql/data
 
   swagger-ui:
-    container_name: gca-swagger-ui
+    container_name: xf-swagger-ui
     image: swaggerapi/swagger-ui
     ports:
       - "8080:8080"
@@ -23,5 +23,5 @@ services:
       - ../../docs/swagger.yaml:/mnt/swagger.yaml:ro
 
 volumes:
-  gca-postgres-data:
+  xf-postgres-data:
 
