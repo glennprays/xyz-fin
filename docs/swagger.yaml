@@ -82,7 +82,7 @@ components:
         tenor:
           type: integer
           example: 6
-        nama_aset:
+        nama_asset:
           type: string
           example: Mobil
 
@@ -105,13 +105,13 @@ components:
           example: 50000.00
         jumlah_cicilan:
           type: number
-          format: double
-          example: 200000.00
+          format: integer 
+          example: 6
         jumlah_bunga:
           type: number
           format: double
           example: 100000.00
-        name_aset:
+        name_asset:
           type: string
           example: Mobil
         status:
