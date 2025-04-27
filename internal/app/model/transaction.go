@@ -5,7 +5,7 @@ import "time"
 type Transaction struct {
 	NomorKontrak  string    `json:"nomor_kontrak"`
 	ConsumerNIK   string    `json:"consumer_nik"`
-	OTR           string    `json:"otr"`
+	OTR           float64   `json:"otr"`
 	AdminFee      float64   `json:"admin_fee"`
 	JumlahCicilan int       `json:"jumlah_cicilan"`
 	JumlahBunga   float64   `json:"jumlah_bunga"`

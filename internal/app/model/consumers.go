@@ -10,7 +10,7 @@ type Consumer struct {
 	LegalName      string    `json:"legal_name"`
 	TempatLahir    string    `json:"tempat_lahir"`
 	TanggalLahir   time.Time `json:"tanggal_lahir"`
-	Gaji           string    `json:"gaji"`
+	Gaji           float64   `json:"gaji"`
 	FotoKTPPath    string    `json:"foto_ktp_path"`
 	FotoSelfiePath string    `json:"foto_selfie_path"`
 	CreatedAt      time.Time `json:"created_at"`

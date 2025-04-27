@@ -9,6 +9,7 @@ import (
 
 type ConsumerLimitRepository interface {
 	FindByNIK(ctx context.Context, nik string) ([]*model.ConsumerLimit, error)
+	FindByNIKAndTenor(ctx context.Context, tx *sql.Tx, nik string, tenor int) (*model.ConsumerLimit, error)
 }
 
 type consumerLimitRepository struct {
@@ -43,4 +44,20 @@ func (r *consumerLimitRepository) FindByNIK(ctx context.Context, nik string) ([]
 	}
 
 	return consumerLimits, nil
+}
+
+func (r *consumerLimitRepository) FindByNIKAndTenor(ctx context.Context, tx *sql.Tx, nik string, tenor int) (*model.ConsumerLimit, error) {
+	consumerLimit := &model.ConsumerLimit{}
+	query := `SELECT consumer_nik, tenor, limit_amount, created_at, updated_at
+        FROM consumer_limits WHERE consumer_nik = $1 AND tenor = $2`
+
+	err := tx.QueryRowContext(ctx, query, nik, tenor).Scan(&consumerLimit.ConsumerNIK, &consumerLimit.Tenor, &consumerLimit.LimitAmount, &consumerLimit.CreatedAt, &consumerLimit.UpdatedAt)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return consumerLimit, nil
 }
