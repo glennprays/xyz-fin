@@ -59,3 +59,27 @@ To run the code in development mode, use the following command:
 ```bash
 go run cmd/api/main.go
 ```
+
+### Run the program in build container 
+```bash
+$ cd misc/production 
+$ docker compose build 
+$ docker compose up -d
+```
+> Note: make your you already run the database in dev mode
+
+### Dummy Account 
+- Account 1 (Budi)
+Phone Number: `081234567890`
+Password: `Password@123`
+NIK: `1111`
+- Account 2 (Annisa)
+Phone Number: `087654321098`
+Password: `Password@123`
+NIK: `2222`
+
+### Run Unit Test 
+To run the unit tests, use the following command:
+```bash
+go test ./...
+```

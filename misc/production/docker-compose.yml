@@ -1,0 +1,14 @@
+services:
+  app:
+    image: xyz-fin:latest
+    build:
+      context: ../..              
+      dockerfile: Dockerfile     
+    container_name: my_app
+    network_mode: host      
+    ports:
+      - "3000:3000"
+    environment:
+      - ENV=production
+    env_file:
+      - ./.env
